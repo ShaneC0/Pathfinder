@@ -1,0 +1,14 @@
+.node {
+    height: 20px;
+    width: 20px;
+    background: #E9EB87;
+    border: 1px solid lightgray;
+}
+
+.node-start {
+    background: #B9F18C;
+}
+
+.node-end {
+    background: #FE5F55;
+}
