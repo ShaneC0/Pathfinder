@@ -1,39 +1,52 @@
 import React from "react";
 
-import Grid from "./components/Grid";
+import Node from "./Node";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nodeList: [],
+      grid: [],
+      rows: 25,
       cols: 50,
-      rows: 50
     };
   }
 
   componentDidMount() {
-    this.getNodes();
+    const grid = this.createGrid();
+    this.setState({ grid });
   }
 
-  getNodes() {
-    const nodes = [];
-    for(let i = 0; i < this.state.cols; i++) {
-      for(let j = 0; j < this.state.rows; j++) {
-        nodes.push({
-          variant: 'default',
-          row: j,
-          col: i
-        })
+  createGrid = () => {
+    const grid = [];
+    for (let i = 1; i <= this.state.rows; i++) {
+      let row = [];
+      for (let j = 1; j <= this.state.cols; j++) {
+        row.push(this.createNode(i, j));
       }
+      grid.push(row);
     }
-    this.setState({nodeList: nodes})
-  }
+    return grid;
+  };
+
+  createNode = (row, col) => {
+    return {
+      variant: Math.random() > 0.5 ? 'start' : 'end',
+      row,
+      col,
+    };
+  };
 
   render() {
     return (
       <div>
-        <Grid nodes={this.state.nodeList} />
+        {this.state.grid.map((row) => (
+          <div className="grid-row">
+            {row.map((node) => (
+              <Node variant={node.variant} />
+            ))}
+          </div>
+        ))}
       </div>
     );
   }

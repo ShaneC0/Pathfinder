@@ -1,5 +1,3 @@
-import "../styles/node.css";
-
 const Node = (props) => {
   return (
     <div
