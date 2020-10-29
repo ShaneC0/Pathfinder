@@ -4,6 +4,11 @@ import Node from "./Node";
 import { dijkstra } from "./dijkstra";
 import { aStar } from "./astar";
 
+const startRow= 2
+const startCol= 2
+const endRow= 18
+const endCol= 48
+
 class App extends React.Component {
   constructor() {
     super();
@@ -11,11 +16,7 @@ class App extends React.Component {
       grid: [[]],
       rows: 20,
       cols: 50,
-      startRow: 2,
-      startCol: 2,
-      endRow: 18,
-      endCol: 48,
-      clickMode: true, // false means editing end node, true means editing start node
+      mouseIsPressed: false,
     };
   }
 
@@ -26,8 +27,8 @@ class App extends React.Component {
 
   async handleDijkstra() {
     const grid = this.state.grid;
-    const startNode = grid[this.state.startRow][this.state.startCol];
-    const endNode = grid[this.state.endRow][this.state.endCol];
+    const startNode = grid[startRow][startCol];
+    const endNode = grid[endRow][endCol];
     const nodesInVisitedOrder = dijkstra(grid, startNode, endNode);
     await this.animateFind(nodesInVisitedOrder);
     await this.animateShortestPath(endNode);
@@ -35,8 +36,8 @@ class App extends React.Component {
 
   async handleAStar() {
     const grid = this.state.grid;
-    const startNode = grid[this.state.startRow][this.state.startCol];
-    const endNode = grid[this.state.endRow][this.state.endCol];
+    const startNode = grid[startRow][startCol];
+    const endNode = grid[endRow][endCol];
     const nodesInVisitedOrder = aStar(grid, startNode, endNode);
     await this.animateFind(nodesInVisitedOrder);
     await this.animateShortestPath(endNode);
@@ -61,36 +62,19 @@ class App extends React.Component {
     }
   }
 
-  clear() {
-    const tempGrid = this.createGrid(this.state.rows, this.state.cols);
-    //figure out how to make the picture update
-    this.setState({ grid: tempGrid });
+  handleMouseDown(row, col) {
+    const tempGrid = getGridWithWall(this.state.grid, row, col)
+    this.setState({grid: tempGrid, mouseIsPressed: true})
   }
 
-  handleClick(e) {
-    const tempGrid = this.state.grid;
+  handleMouseEnter(row, col) {
+    if(!this.state.mouseIsPressed) return
+    const tempGrid = getGridWithWall(this.state.grid, row, col)
+    this.setState({grid: tempGrid})
+  }
 
-    if (this.state.clickMode) {
-      document.getElementById(e.target.id).className = "node node-start";
-      document.getElementById(
-        `node-${this.state.startRow}-${this.state.startCol}`
-      ).className = "node";
-      const row = e.target.id.split("-")[1];
-      const col = e.target.id.split("-")[2];
-      tempGrid[row][col].isStart = !tempGrid[row][col].isStart;
-      tempGrid[this.state.startRow][this.state.startCol].isStart = "false";
-      this.setState({ grid: tempGrid, startRow: row, startCol: col });
-    } else {
-      document.getElementById(e.target.id).className = "node node-end";
-      document.getElementById(
-        `node-${this.state.endRow}-${this.state.endCol}`
-      ).className = "node";
-      const row = e.target.id.split("-")[1];
-      const col = e.target.id.split("-")[2];
-      tempGrid[row][col].isEnd = !tempGrid[row][col].isEnd;
-      tempGrid[this.state.endRow][this.state.endCol].isEnd = "false";
-      this.setState({ grid: tempGrid, endRow: row, endCol: col });
-    }
+  handleMouseUp() {
+    this.setState({mouseIsPressed: false})
   }
 
   createGrid(rows, cols) {
@@ -112,14 +96,14 @@ class App extends React.Component {
       previous: null,
       visited: false,
       isStart:
-        col === this.state.startCol && row === this.state.startRow
+        col === startCol && row === startRow
           ? true
           : false,
       isEnd:
-        col === this.state.endCol && row === this.state.endRow 
+        col === endCol && row === endRow 
           ? true 
           : false,
-      isWall: col === 20 && row > 1 && row < 15 ? true : false,
+      isWall: false,
       distance: Infinity,
       g: Infinity,
       f: Infinity,
@@ -137,19 +121,6 @@ class App extends React.Component {
             <button onClick={() => this.handleDijkstra()} className="btn">
               Dijkstra
             </button>
-            <button onClick={() => this.clear()} className="btn">
-              Clear
-            </button>
-            <button
-              onClick={() =>
-                this.setState((state) => ({
-                  clickMode: !state.clickMode,
-                }))
-              }
-              className="btn"
-            >
-              Toggle Click Mode: {this.state.clickMode ? "Start" : "End"}
-            </button>
           </div>
           {this.state.grid.map((row, rowIndex) => (
             <div className="grid-row" key={rowIndex}>
@@ -157,8 +128,10 @@ class App extends React.Component {
                 <Node
                   node={node}
                   key={nodeIndex}
-                  id={`node-${node.row}-${node.col}`}
-                  onClick={(e) => this.handleClick(e)}
+                  onMouseDown={(row, col) => this.handleMouseDown(row, col)}
+                  mouseIsPressed={this.state.mouseIsPressed}
+                  onMouseEnter={(row, col) => this.handleMouseEnter(row, col)}
+                  onMouseUp={() => this.handleMouseUp()}
                 />
               ))}
             </div>
@@ -167,6 +140,17 @@ class App extends React.Component {
       </div>
     );
   }
+}
+
+const getGridWithWall = (grid, row, col) => {
+  const tempGrid = grid.slice()
+  const node = tempGrid[row][col]
+  const newNode = {
+    ...node,
+    isWall: !node.isWall
+  }
+  tempGrid[row][col] = newNode;
+  return tempGrid
 }
 
 export default App;

@@ -6,7 +6,9 @@ const Node = (props) => {
         ${props.node.isEnd ? "node-end" : ""}
         ${props.node.isWall ? "node-wall" : ""}`}
       id={`node-${props.node.row}-${props.node.col}`}
-      onClick={(e) => props.onClick(e)}
+      onMouseDown={() => props.onMouseDown(props.node.row, props.node.col)}
+      onMouseEnter={() => props.onMouseEnter(props.node.row, props.node.col)}
+      onMouseUp={() => props.onMouseUp()}
     ></div>
   );
 };
