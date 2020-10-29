@@ -1,8 +1,9 @@
 import React from "react";
 
 import Node from "./Node";
-import { dijkstra } from "./dijkstra";
-import { aStar } from "./astar";
+import { dijkstra } from "./algorithms/dijkstra";
+import { aStar } from "./algorithms/astar";
+import {depthFirstSearch} from "./algorithms/depthfs"
 
 const startRow= 2
 const startCol= 2
@@ -41,6 +42,15 @@ class App extends React.Component {
     const nodesInVisitedOrder = aStar(grid, startNode, endNode);
     await this.animateFind(nodesInVisitedOrder);
     await this.animateShortestPath(endNode);
+  }
+
+  async handleDFS() {
+    const grid = this.state.grid
+    const startNode = grid[startRow][startCol]
+    const endNode = grid[endRow][endCol];
+    const nodesInVisitedOrder = depthFirstSearch(grid, startNode, endNode)
+    await this.animateFind(nodesInVisitedOrder);
+    await this.animateShortestPath(endNode)
   }
 
   async animateFind(nodesInVisitedOrder) {
@@ -120,6 +130,9 @@ class App extends React.Component {
             </button>
             <button onClick={() => this.handleDijkstra()} className="btn">
               Dijkstra
+            </button>
+            <button onClick={() => this.handleDFS()} className="btn">
+              Depth First Search
             </button>
           </div>
           {this.state.grid.map((row, rowIndex) => (

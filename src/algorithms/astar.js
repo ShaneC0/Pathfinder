@@ -7,10 +7,8 @@ export function aStar(grid, startNode, endNode) {
 
     openSet.push(startNode)
 
-    console.log(openSet)
 
     while(openSet.length > 0) {
-        console.log('hello')
         let current = lowestF(openSet)
 
         if(current === endNode) {
