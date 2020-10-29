@@ -25,6 +25,8 @@ export function aStar(grid, startNode, endNode) {
         for(let i = 0; i < neighbors.length; i++) {
             let neighbor = neighbors[i]
 
+            if(neighbor.isWall) continue
+
             let tempG = current.g + 1
             
             if(tempG < neighbor.g) {

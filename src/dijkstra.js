@@ -31,6 +31,7 @@ function deepCopy(grid) {
 function updateUnvisitedNeighbors(node, grid) {
   const unvisitedNeighbors = getUnvisitedNeighbors(node, grid);
   for (const neighbor of unvisitedNeighbors) {
+    if(neighbor.isWall) continue
     neighbor.distance = node.distance + 1;
     neighbor.previous = node;
   }

@@ -35,11 +35,15 @@ body {
 }
 
 .node-visited {
-  background: #387D7A;
+  background: #66d1cc;
 }
 
 .node-shortest {
   background: rgb(255, 255, 143)
+}
+
+.node-wall {
+  background: black
 }
 
 .btn {
