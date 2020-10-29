@@ -3,8 +3,8 @@ const Node = (props) => {
     <div
       className={`node 
         ${props.node.isStart ? "node-start" : ""} 
-        ${props.node.isEnd ? "node-end" : ""}
-        ${props.node.visited ? "node-visited" : ""}`}
+        ${props.node.isEnd ? "node-end" : ""}`}
+      id={`node-${props.node.row}-${props.node.col}`}
     ></div>
   );
 };

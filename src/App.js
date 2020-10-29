@@ -1,15 +1,16 @@
 import React from "react";
 
 import Node from "./Node";
-import { aStar } from "./astar";
+import { dijkstra } from "./dijkstra";
+import { aStar } from './astar'
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
-      grid: [],
-      rows: 40,
-      cols: 75,
+      grid: [[]],
+      rows: 20,
+      cols: 50,
     };
   }
 
@@ -18,35 +19,75 @@ class App extends React.Component {
     this.setState({ grid });
   }
 
+  async handleDijkstra() {
+    const grid = this.state.grid;
+    const startNode = grid[5][10];
+    const endNode = grid[18][48];
+    const nodesInVisitedOrder = dijkstra(grid, startNode, endNode);
+    await this.animateFind(nodesInVisitedOrder);
+    await this.animateShortestPath(endNode);
+  }
+
+  async handleAStar() {
+    const grid = this.state.grid;
+    const startNode = grid[5][10];
+    const endNode = grid[18][48];
+    const nodesInVisitedOrder = aStar(grid, startNode, endNode);
+    await this.animateFind(nodesInVisitedOrder);
+    await this.animateShortestPath(endNode);
+  }
+
+  async animateFind(nodesInVisitedOrder) {
+    for (let i = 0; i < nodesInVisitedOrder.length; i++) {
+      let node = nodesInVisitedOrder[i];
+      document.getElementById(`node-${node.row}-${node.col}`).className += 'node-visited'
+      await new Promise((resolve) => setTimeout(resolve, 1));
+    }
+  }
+
+  async animateShortestPath(endNode) {
+    let current = endNode.previous;
+    while (current.previous !== null) {
+      document.getElementById(`node-${current.row}-${current.col}`).className =
+        "node node-shortest";
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      current = current.previous;
+    }
+  }
+
   render() {
     return (
       <div>
-        <div>
+        <div className="pane">
+          <div>
+            <button onClick={() => this.handleAStar()} className="btn">A*</button>
+            <button onClick={() => this.handleDijkstra()} className="btn">
+              Dijkstra
+            </button>
+            <button className="btn">Clear</button>
+          </div>
           {this.state.grid.map((row, rowIndex) => (
             <div className="grid-row" key={rowIndex}>
               {row.map((node, nodeIndex) => (
-                <Node node={node} key={nodeIndex} />
+                <Node
+                  node={node}
+                  key={nodeIndex}
+                  id={`node-${node.row}-${node.col}`}
+                />
               ))}
             </div>
           ))}
         </div>
-        <button>A*</button>
       </div>
     );
   }
 }
 
-const handleAStar = () => {
-  //NEED TO GET START AND END NODES 
-
-  const shortestPath = aStar(this.state.grid);
-};
-
 const createGrid = (rows, cols) => {
   const grid = [];
-  for (let i = 1; i <= rows; i++) {
+  for (let i = 0; i < rows; i++) {
     let row = [];
-    for (let j = 1; j <= cols; j++) {
+    for (let j = 0; j < cols; j++) {
       row.push(createNode(i, j));
     }
     grid.push(row);
@@ -54,22 +95,17 @@ const createGrid = (rows, cols) => {
   return grid;
 };
 
-//f(n) = estimatedShortestPath
-//g(n) = costFromStart
-//h(n) = heuristicValue
-
 const createNode = (row, col) => {
   return {
     row,
     col,
     previous: null,
     visited: false,
-    isStart: col == 10 && row == 10 ? true : false,
-    isEnd: col == 60 && row == 30 ? true : false,
+    isStart: col === 10 && row === 5 ? true : false,
+    isEnd: col === 48 && row === 18 ? true : false,
     distance: Infinity,
-    estimatedShortestPath: Infinity,
-    costFromStart: 0,
-    heuristicValue: 0,
+    g: Infinity,
+    f: Infinity
   };
 };
 

@@ -5,25 +5,44 @@ body {
   height: 100vh; 
 }
 
+.pane {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #86b5f3
+}
+
 .grid-row {
   display: flex;
 }
 
 .node {
-  height: 12px;
-  width: 12px;
+  height: 20px;
+  width: 20px;
   background: #dcedff;
-  border: 1px solid lightgray;
+  border: 1px solid gray;
 }
 
 .node-start {
-  background: #b9f18c;
+  background: #b9f18c !important;
 }
 
 .node-end {
-  background: #fe5f55;
+  background: #fe5f55 !important;
 }
 
 .node-visited {
-  background: #387D7A !important;
+  background: #387D7A;
+}
+
+.node-shortest {
+  background: rgb(255, 255, 143)
+}
+
+.btn {
+  padding: 7px;
+  margin-left: 3px;
 }
