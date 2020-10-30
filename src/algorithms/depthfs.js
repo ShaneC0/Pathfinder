@@ -9,7 +9,12 @@ export function depthFirstSearch(grid, startNode, endNode) {
         let current = stack.pop()
 
         if(current === endNode) {
+            console.log(visitedNodesInOrder)
             return visitedNodesInOrder
+        }
+
+        if(current === null) {
+            return current
         }
 
         if(!current.visited) {

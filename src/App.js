@@ -3,7 +3,6 @@ import React from "react";
 import Node from "./Node";
 import { dijkstra } from "./algorithms/dijkstra";
 import { aStar } from "./algorithms/astar";
-import { depthFirstSearch } from "./algorithms/depthfs";
 
 const startRow = 2;
 const startCol = 2;
@@ -12,12 +11,14 @@ const endCol = 48;
 const rows = 20;
 const cols = 50;
 
+
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       grid: [[]],
       mouseIsPressed: false,
+      searchStatus: 'Draw a grid and select an algorithm to start.'
     };
   }
 
@@ -26,31 +27,21 @@ class App extends React.Component {
     this.setState({ grid });
   }
 
-  async handleDijkstra() {
+  async handleSort(algo) {
     const grid = this.state.grid;
     const startNode = grid[startRow][startCol];
     const endNode = grid[endRow][endCol];
-    const nodesInVisitedOrder = dijkstra(grid, startNode, endNode);
-    await this.animateSort(nodesInVisitedOrder);
-    await this.animateShortestPath(endNode);
-  }
-
-  async handleAStar() {
-    const grid = this.state.grid;
-    const startNode = grid[startRow][startCol];
-    const endNode = grid[endRow][endCol];
-    const nodesInVisitedOrder = aStar(grid, startNode, endNode);
-    await this.animateSort(nodesInVisitedOrder);
-    await this.animateShortestPath(endNode);
-  }
-
-  async handleDFS() {
-    const grid = this.state.grid;
-    const startNode = grid[startRow][startCol];
-    const endNode = grid[endRow][endCol];
-    const nodesInVisitedOrder = depthFirstSearch(grid, startNode, endNode);
-    await this.animateSort(nodesInVisitedOrder);
-    await this.animateShortestPath(endNode);
+    const nodesInVisitedOrder = algo(grid, startNode, endNode);
+    if(!nodesInVisitedOrder) {
+      this.setState({searchStatus: 'No solution.'})
+    } else {
+      this.setState({searchStatus: 'Searching...'})
+      await this.animateSort(nodesInVisitedOrder);
+      this.setState({searchStatus: 'Finding shortest path...'})
+      await this.animateShortestPath(endNode);
+      this.setState({searchStatus: 'Complete!'})
+    }
+    
   }
 
   async animateSort(nodesInVisitedOrder) {
@@ -88,48 +79,58 @@ class App extends React.Component {
   }
 
   clear() {
-    let newGrid = []
-    for(let i = 0; i < this.state.grid.length; i++) {
-      let row = []
-      for(let j = 0; j < this.state.grid[i].length; j++) {
-        if(!(this.state.grid[i][j].isStart || this.state.grid[i][j].isEnd || this.state.grid[i][j].isWall)) {
-          document.getElementById(`node-${i}-${j}`).className = `node ${this.state.grid[i][j].isStart ? 'node-start': ''}
-          ${this.state.grid[i][j].isEnd ? 'node-end': ''} ${this.state.grid[i][j].isWall ? 'node-wall': ''}`
+    let newGrid = [];
+    for (let i = 0; i < this.state.grid.length; i++) {
+      let row = [];
+      for (let j = 0; j < this.state.grid[i].length; j++) {
+        if (
+          !(
+            this.state.grid[i][j].isStart ||
+            this.state.grid[i][j].isEnd ||
+            this.state.grid[i][j].isWall
+          )
+        ) {
+          document.getElementById(`node-${i}-${j}`).className = `node ${
+            this.state.grid[i][j].isStart ? "node-start" : ""
           }
-          const newNode = {
-            row: i,
-            col: j,
-            previous: null,
-            visited: false,
-            isStart: this.state.grid[i][j].isStart,
-            isEnd: this.state.grid[i][j].isEnd,
-            isWall: this.state.grid[i][j].isWall,
-            distance: Infinity,
-            g: Infinity,
-            f: Infinity,
-          }; 
-        row.push(newNode)
+          ${this.state.grid[i][j].isEnd ? "node-end" : ""} ${
+            this.state.grid[i][j].isWall ? "node-wall" : ""
+          }`;
+        }
+        const newNode = {
+          row: i,
+          col: j,
+          previous: null,
+          visited: false,
+          isStart: this.state.grid[i][j].isStart,
+          isEnd: this.state.grid[i][j].isEnd,
+          isWall: this.state.grid[i][j].isWall,
+          distance: Infinity,
+          g: Infinity,
+          f: Infinity,
+        };
+        row.push(newNode);
       }
-      newGrid.push(row)
+      newGrid.push(row);
     }
-    this.setState({grid: newGrid})
+    this.setState({ grid: newGrid });
   }
 
   render() {
     return (
       <div>
         <div className="pane">
+        <div className="status">{this.state.searchStatus}</div>
           <div>
-            <button onClick={() => this.handleAStar()} className="btn">
+            <button onClick={() => this.handleSort(aStar)} className="btn">
               A*
             </button>
-            <button onClick={() => this.handleDijkstra()} className="btn">
+            <button onClick={() => this.handleSort(dijkstra)} className="btn">
               Dijkstra
             </button>
-            <button onClick={() => this.handleDFS()} className="btn">
-              Depth First Search
+            <button onClick={() => this.clear()} className="btn">
+              Clear
             </button>
-            <button onClick={() => this.clear()} className="btn">Clear</button>
           </div>
           {this.state.grid.map((row, rowIndex) => (
             <div className="grid-row" key={rowIndex}>

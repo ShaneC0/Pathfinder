@@ -1,32 +1,21 @@
 export function aStar(grid, startNode, endNode) {
     let openSet = []
     let nodesInVisitedOrder = []
-
     startNode.g = 0
     startNode.f = hueristic(startNode, endNode)
-
     openSet.push(startNode)
-
-
     while(openSet.length > 0) {
         let current = lowestF(openSet)
-
         if(current === endNode) {
             return nodesInVisitedOrder
         }
-
         openSet = openSet.filter(node => node !== current)
         nodesInVisitedOrder.push(current)
-
         let neighbors = findNeighbors(current, grid)
-
         for(let i = 0; i < neighbors.length; i++) {
             let neighbor = neighbors[i]
-
             if(neighbor.isWall) continue
-
-            let tempG = current.g + 1
-            
+            let tempG = current.g + 1  
             if(tempG < neighbor.g) {
                 neighbor.previous = current
                 neighbor.g = tempG
@@ -38,10 +27,7 @@ export function aStar(grid, startNode, endNode) {
         }
         current.visited = true
     }
-
 }
-
-
 
 function lowestF(array) {
     let lowestIndex = 0
