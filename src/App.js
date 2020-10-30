@@ -3,26 +3,26 @@ import React from "react";
 import Node from "./Node";
 import { dijkstra } from "./algorithms/dijkstra";
 import { aStar } from "./algorithms/astar";
-import {depthFirstSearch} from "./algorithms/depthfs"
+import { depthFirstSearch } from "./algorithms/depthfs";
 
-const startRow= 2
-const startCol= 2
-const endRow= 18
-const endCol= 48
+const startRow = 2;
+const startCol = 2;
+const endRow = 18;
+const endCol = 48;
+const rows = 20;
+const cols = 50;
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       grid: [[]],
-      rows: 20,
-      cols: 50,
       mouseIsPressed: false,
     };
   }
 
   componentDidMount() {
-    const grid = this.createGrid(this.state.rows, this.state.cols);
+    const grid = createGrid(rows, cols);
     this.setState({ grid });
   }
 
@@ -31,7 +31,7 @@ class App extends React.Component {
     const startNode = grid[startRow][startCol];
     const endNode = grid[endRow][endCol];
     const nodesInVisitedOrder = dijkstra(grid, startNode, endNode);
-    await this.animateFind(nodesInVisitedOrder);
+    await this.animateSort(nodesInVisitedOrder);
     await this.animateShortestPath(endNode);
   }
 
@@ -40,20 +40,20 @@ class App extends React.Component {
     const startNode = grid[startRow][startCol];
     const endNode = grid[endRow][endCol];
     const nodesInVisitedOrder = aStar(grid, startNode, endNode);
-    await this.animateFind(nodesInVisitedOrder);
+    await this.animateSort(nodesInVisitedOrder);
     await this.animateShortestPath(endNode);
   }
 
   async handleDFS() {
-    const grid = this.state.grid
-    const startNode = grid[startRow][startCol]
+    const grid = this.state.grid;
+    const startNode = grid[startRow][startCol];
     const endNode = grid[endRow][endCol];
-    const nodesInVisitedOrder = depthFirstSearch(grid, startNode, endNode)
-    await this.animateFind(nodesInVisitedOrder);
-    await this.animateShortestPath(endNode)
+    const nodesInVisitedOrder = depthFirstSearch(grid, startNode, endNode);
+    await this.animateSort(nodesInVisitedOrder);
+    await this.animateShortestPath(endNode);
   }
 
-  async animateFind(nodesInVisitedOrder) {
+  async animateSort(nodesInVisitedOrder) {
     for (let i = 0; i < nodesInVisitedOrder.length; i++) {
       let node = nodesInVisitedOrder[i];
       document.getElementById(`node-${node.row}-${node.col}`).className +=
@@ -73,51 +73,46 @@ class App extends React.Component {
   }
 
   handleMouseDown(row, col) {
-    const tempGrid = getGridWithWall(this.state.grid, row, col)
-    this.setState({grid: tempGrid, mouseIsPressed: true})
+    const tempGrid = getGridWithWall(this.state.grid, row, col);
+    this.setState({ grid: tempGrid, mouseIsPressed: true });
   }
 
   handleMouseEnter(row, col) {
-    if(!this.state.mouseIsPressed) return
-    const tempGrid = getGridWithWall(this.state.grid, row, col)
-    this.setState({grid: tempGrid})
+    if (!this.state.mouseIsPressed) return;
+    const tempGrid = getGridWithWall(this.state.grid, row, col);
+    this.setState({ grid: tempGrid });
   }
 
   handleMouseUp() {
-    this.setState({mouseIsPressed: false})
+    this.setState({ mouseIsPressed: false });
   }
 
-  createGrid(rows, cols) {
-    const grid = [];
-    for (let i = 0; i < rows; i++) {
-      let row = [];
-      for (let j = 0; j < cols; j++) {
-        row.push(this.createNode(i, j));
+  clear() {
+    let newGrid = []
+    for(let i = 0; i < this.state.grid.length; i++) {
+      let row = []
+      for(let j = 0; j < this.state.grid[i].length; j++) {
+        if(!(this.state.grid[i][j].isStart || this.state.grid[i][j].isEnd || this.state.grid[i][j].isWall)) {
+          document.getElementById(`node-${i}-${j}`).className = `node ${this.state.grid[i][j].isStart ? 'node-start': ''}
+          ${this.state.grid[i][j].isEnd ? 'node-end': ''} ${this.state.grid[i][j].isWall ? 'node-wall': ''}`
+          }
+          const newNode = {
+            row: i,
+            col: j,
+            previous: null,
+            visited: false,
+            isStart: this.state.grid[i][j].isStart,
+            isEnd: this.state.grid[i][j].isEnd,
+            isWall: this.state.grid[i][j].isWall,
+            distance: Infinity,
+            g: Infinity,
+            f: Infinity,
+          }; 
+        row.push(newNode)
       }
-      grid.push(row);
+      newGrid.push(row)
     }
-    return grid;
-  }
-
-  createNode(row, col) {
-    return {
-      row,
-      col,
-      previous: null,
-      visited: false,
-      isStart:
-        col === startCol && row === startRow
-          ? true
-          : false,
-      isEnd:
-        col === endCol && row === endRow 
-          ? true 
-          : false,
-      isWall: false,
-      distance: Infinity,
-      g: Infinity,
-      f: Infinity,
-    };
+    this.setState({grid: newGrid})
   }
 
   render() {
@@ -134,6 +129,7 @@ class App extends React.Component {
             <button onClick={() => this.handleDFS()} className="btn">
               Depth First Search
             </button>
+            <button onClick={() => this.clear()} className="btn">Clear</button>
           </div>
           {this.state.grid.map((row, rowIndex) => (
             <div className="grid-row" key={rowIndex}>
@@ -155,15 +151,42 @@ class App extends React.Component {
   }
 }
 
+const createGrid = (rows, cols) => {
+  const grid = [];
+  for (let i = 0; i < rows; i++) {
+    let row = [];
+    for (let j = 0; j < cols; j++) {
+      row.push(createNode(i, j));
+    }
+    grid.push(row);
+  }
+  return grid;
+};
+
+const createNode = (row, col) => {
+  return {
+    row,
+    col,
+    previous: null,
+    visited: false,
+    isStart: col === startCol && row === startRow ? true : false,
+    isEnd: col === endCol && row === endRow ? true : false,
+    isWall: false,
+    distance: Infinity,
+    g: Infinity,
+    f: Infinity,
+  };
+};
+
 const getGridWithWall = (grid, row, col) => {
-  const tempGrid = grid.slice()
-  const node = tempGrid[row][col]
+  const tempGrid = grid.slice();
+  const node = tempGrid[row][col];
   const newNode = {
     ...node,
-    isWall: !node.isWall
-  }
+    isWall: !node.isWall,
+  };
   tempGrid[row][col] = newNode;
-  return tempGrid
-}
+  return tempGrid;
+};
 
 export default App;
