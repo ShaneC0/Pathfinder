@@ -120,6 +120,26 @@ class App extends React.Component {
         <div className="container">
           <div className="pane">
             <div className="status">{this.state.searchStatus}</div>
+            <div className="info">
+              <div className="info-item">
+              Unvisited - &nbsp; <div className="node"></div>
+              </div>
+              <div className="info-item">
+              Visited - &nbsp; <div className="node node-visited"></div>
+              </div>
+              <div className="info-item">
+              Start - &nbsp; <div className="node node-start"></div>
+              </div>
+              <div className="info-item">
+              End - &nbsp; <div className="node node-end"></div>
+              </div>
+              <div className="info-item">
+              Shortest Path - &nbsp; <div className="node node-shortest"></div>
+              </div>
+              <div className="info-item">
+              Wall - &nbsp; <div className="node node-wall"></div>
+              </div>
+            </div>
             <div className="grid">
             {this.state.grid.map((row, rowIndex) => (
               <div className="grid-row" key={rowIndex}>

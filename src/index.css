@@ -54,19 +54,33 @@ body {
 .btn {
   padding: 10px;
   margin: 15px;
-  background: #b9f18c;
+  background: #2A2B2E;
+  color: #dcedff;
   font-size: 35px;
   border: none;
   border-radius: 10px;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 12px 40px 0 rgba(0, 0, 0, 0.38);
 }
 
+.btn:hover {
+  background: #dcedff;
+  color: #2A2B2E;
+}
+
 .status {
-  background: #fe5f55;
-  padding: 20px;
   margin: 15px;
-  color: white;
+  color: #dcedff;
   font-size: 40px;
-  border-radius: 25px;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4), 0 12px 40px 0 rgba(0, 0, 0, 0.38);
+  text-shadow: 2px 2px 5px #000;
+}
+
+.info {
+  display: flex;
+  color: #dcedff;
+  font-size: 15px;
+}
+
+.info-item {
+  display: flex;
+  margin: 10px;
 }
