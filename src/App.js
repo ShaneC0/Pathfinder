@@ -167,8 +167,10 @@ class App extends React.Component {
                 Clear
               </button>
             </div>
+            
           </div>
         </div>
+        <div className="tag"><a href="https://github.com/ShaneC0">@ShaneC0</a></div>
       </div>
     );
   }
