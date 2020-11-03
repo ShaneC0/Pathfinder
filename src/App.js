@@ -8,9 +8,8 @@ const startRow = 2;
 const startCol = 2;
 const endRow = 18;
 const endCol = 48;
-const rows = 20;
-const cols = 50;
-
+const rows = 30;
+const cols = 60;
 
 class App extends React.Component {
   constructor() {
@@ -18,7 +17,7 @@ class App extends React.Component {
     this.state = {
       grid: [[]],
       mouseIsPressed: false,
-      searchStatus: 'Draw a grid and select an algorithm to start.'
+      searchStatus: "Draw a grid and select an algorithm to start.",
     };
   }
 
@@ -32,16 +31,15 @@ class App extends React.Component {
     const startNode = grid[startRow][startCol];
     const endNode = grid[endRow][endCol];
     const nodesInVisitedOrder = algo(grid, startNode, endNode);
-    if(!nodesInVisitedOrder) {
-      this.setState({searchStatus: 'No solution.'})
+    if (!nodesInVisitedOrder) {
+      this.setState({ searchStatus: "No solution." });
     } else {
-      this.setState({searchStatus: 'Searching...'})
+      this.setState({ searchStatus: "Searching..." });
       await this.animateSort(nodesInVisitedOrder);
-      this.setState({searchStatus: 'Finding shortest path...'})
+      this.setState({ searchStatus: "Finding shortest path..." });
       await this.animateShortestPath(endNode);
-      this.setState({searchStatus: 'Complete!'})
+      this.setState({ searchStatus: "Complete!" });
     }
-    
   }
 
   async animateSort(nodesInVisitedOrder) {
@@ -113,39 +111,43 @@ class App extends React.Component {
       }
       newGrid.push(row);
     }
-    this.setState({ grid: newGrid });
+    this.setState({ grid: newGrid, searchStatus: "Draw a grid and select an algorithm to start."});
   }
 
   render() {
     return (
       <div>
-        <div className="pane">
-        <div className="status">{this.state.searchStatus}</div>
-          <div>
-            <button onClick={() => this.handleSort(aStar)} className="btn">
-              A*
-            </button>
-            <button onClick={() => this.handleSort(dijkstra)} className="btn">
-              Dijkstra
-            </button>
-            <button onClick={() => this.clear()} className="btn">
-              Clear
-            </button>
-          </div>
-          {this.state.grid.map((row, rowIndex) => (
-            <div className="grid-row" key={rowIndex}>
-              {row.map((node, nodeIndex) => (
-                <Node
-                  node={node}
-                  key={nodeIndex}
-                  onMouseDown={(row, col) => this.handleMouseDown(row, col)}
-                  mouseIsPressed={this.state.mouseIsPressed}
-                  onMouseEnter={(row, col) => this.handleMouseEnter(row, col)}
-                  onMouseUp={() => this.handleMouseUp()}
-                />
-              ))}
+        <div className="container">
+          <div className="pane">
+            <div className="status">{this.state.searchStatus}</div>
+            <div className="grid">
+            {this.state.grid.map((row, rowIndex) => (
+              <div className="grid-row" key={rowIndex}>
+                {row.map((node, nodeIndex) => (
+                  <Node
+                    node={node}
+                    key={nodeIndex}
+                    onMouseDown={(row, col) => this.handleMouseDown(row, col)}
+                    mouseIsPressed={this.state.mouseIsPressed}
+                    onMouseEnter={(row, col) => this.handleMouseEnter(row, col)}
+                    onMouseUp={() => this.handleMouseUp()}
+                  />
+                ))}
+              </div>
+            ))}
             </div>
-          ))}
+            <div className="banner">
+              <button onClick={() => this.handleSort(aStar)} className="btn">
+                A*
+              </button>
+              <button onClick={() => this.handleSort(dijkstra)} className="btn">
+                Dijkstra
+              </button>
+              <button onClick={() => this.clear()} className="btn">
+                Clear
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
