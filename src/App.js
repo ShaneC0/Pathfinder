@@ -4,12 +4,12 @@ import Node from "./Node";
 import { dijkstra } from "./algorithms/dijkstra";
 import { aStar } from "./algorithms/astar";
 
-const startRow = 2;
-const startCol = 2;
+const startRow = 1;
+const startCol = 1;
 const endRow = 18;
-const endCol = 48;
-const rows = 30;
-const cols = 60;
+const endCol = 38;
+const rows = 20;
+const cols = 40;
 
 class App extends React.Component {
   constructor() {
