@@ -31,7 +31,7 @@ class App extends React.Component {
     const startNode = grid[startRow][startCol];
     const endNode = grid[endRow][endCol];
     const nodesInVisitedOrder = algo(grid, startNode, endNode);
-    if (!nodesInVisitedOrder) {
+    if (nodesInVisitedOrder === undefined) {
       this.setState({ searchStatus: "No solution." });
     } else {
       this.setState({ searchStatus: "Searching..." });
@@ -111,7 +111,10 @@ class App extends React.Component {
       }
       newGrid.push(row);
     }
-    this.setState({ grid: newGrid, searchStatus: "Draw a grid and select an algorithm to start."});
+    this.setState({
+      grid: newGrid,
+      searchStatus: "Draw a grid and select an algorithm to start.",
+    });
   }
 
   render() {
@@ -122,39 +125,42 @@ class App extends React.Component {
             <div className="status">{this.state.searchStatus}</div>
             <div className="info">
               <div className="info-item">
-              Unvisited - &nbsp; <div className="node"></div>
+                Unvisited - &nbsp; <div className="node"></div>
               </div>
               <div className="info-item">
-              Visited - &nbsp; <div className="node node-visited"></div>
+                Visited - &nbsp; <div className="node node-visited"></div>
               </div>
               <div className="info-item">
-              Start - &nbsp; <div className="node node-start"></div>
+                Start - &nbsp; <div className="node node-start"></div>
               </div>
               <div className="info-item">
-              End - &nbsp; <div className="node node-end"></div>
+                End - &nbsp; <div className="node node-end"></div>
               </div>
               <div className="info-item">
-              Shortest Path - &nbsp; <div className="node node-shortest"></div>
+                Shortest Path - &nbsp;{" "}
+                <div className="node node-shortest"></div>
               </div>
               <div className="info-item">
-              Wall - &nbsp; <div className="node node-wall"></div>
+                Wall - &nbsp; <div className="node node-wall"></div>
               </div>
             </div>
             <div className="grid">
-            {this.state.grid.map((row, rowIndex) => (
-              <div className="grid-row" key={rowIndex}>
-                {row.map((node, nodeIndex) => (
-                  <Node
-                    node={node}
-                    key={nodeIndex}
-                    onMouseDown={(row, col) => this.handleMouseDown(row, col)}
-                    mouseIsPressed={this.state.mouseIsPressed}
-                    onMouseEnter={(row, col) => this.handleMouseEnter(row, col)}
-                    onMouseUp={() => this.handleMouseUp()}
-                  />
-                ))}
-              </div>
-            ))}
+              {this.state.grid.map((row, rowIndex) => (
+                <div className="grid-row" key={rowIndex}>
+                  {row.map((node, nodeIndex) => (
+                    <Node
+                      node={node}
+                      key={nodeIndex}
+                      onMouseDown={(row, col) => this.handleMouseDown(row, col)}
+                      mouseIsPressed={this.state.mouseIsPressed}
+                      onMouseEnter={(row, col) =>
+                        this.handleMouseEnter(row, col)
+                      }
+                      onMouseUp={() => this.handleMouseUp()}
+                    />
+                  ))}
+                </div>
+              ))}
             </div>
             <div className="banner">
               <button onClick={() => this.handleSort(aStar)} className="btn">
@@ -167,10 +173,11 @@ class App extends React.Component {
                 Clear
               </button>
             </div>
-            
           </div>
         </div>
-        <div className="tag"><a href="https://github.com/ShaneC0">@ShaneC0</a></div>
+        <div className="tag">
+          <a href="https://github.com/ShaneC0">@ShaneC0</a>
+        </div>
       </div>
     );
   }
